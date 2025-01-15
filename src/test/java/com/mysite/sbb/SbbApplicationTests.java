@@ -58,8 +58,8 @@ class SbbApplicationTests {
 		void findAllQuesitons() {
 			setUpQuestions();
 			var allQuestions = questionRepository.findAll();
-			assertThat(allQuestions.size()).isEqualTo(2);
-			var q = allQuestions.get(0);
+			assertThat(allQuestions).hasSize(2);
+			var q = allQuestions.getFirst();
 			assertThat(q.getSubject()).isEqualTo("sbb가 무엇인가요?");
 		}
 
@@ -68,15 +68,15 @@ class SbbApplicationTests {
 		void findBySubject() {
 			setUpQuestions();
 			var question = questionRepository.findBySubject("sbb가 무엇인가요?");
-			assertThat(question.isPresent()).isTrue();
+			assertThat(question).isPresent();
 		}
 
 		@Test
 		@DisplayName("subject와 content로 질문을 조회할 수 있다")
 		void findBySubjectAndContent() {
 			setUpQuestions();
-			var q = questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
-			assertThat(q.isPresent()).isTrue();
+			var question = questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
+			assertThat(question).isPresent();
 		}
 
 		@Test
@@ -84,7 +84,7 @@ class SbbApplicationTests {
 		void findBySubjectLike() {
 			setUpQuestions();
 			var questions = questionRepository.findBySubjectLike("sbb%");
-			var question = questions.get(0);
+			var question = questions.getFirst();
 			assertThat(question.getSubject()).isEqualTo("sbb가 무엇인가요?");
 		}
 	}
