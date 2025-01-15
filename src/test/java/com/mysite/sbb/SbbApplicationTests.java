@@ -78,5 +78,14 @@ class SbbApplicationTests {
 			var q = questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
 			assertThat(q.isPresent()).isTrue();
 		}
+
+		@Test
+		@DisplayName("subject의 특정 문자열로 질문을 검색할 수 있다")
+		void findBySubjectLike() {
+			setUpQuestions();
+			var questions = questionRepository.findBySubjectLike("sbb%");
+			var question = questions.get(0);
+			assertThat(question.getSubject()).isEqualTo("sbb가 무엇인가요?");
+		}
 	}
 }
