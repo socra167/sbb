@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -63,11 +64,19 @@ class SbbApplicationTests {
 		}
 
 		@Test
-		@DisplayName("Subject로 질문을 조회할 수 있다")
+		@DisplayName("subject로 질문을 조회할 수 있다")
 		void findBySubject() {
 			setUpQuestions();
 			var question = questionRepository.findBySubject("sbb가 무엇인가요?");
 			assertThat(question.isPresent()).isTrue();
+		}
+
+		@Test
+		@DisplayName("subject와 content로 질문을 조회할 수 있다")
+		void findBySubjectAndContent() {
+			setUpQuestions();
+			var q = questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
+			assertThat(q.isPresent()).isTrue();
 		}
 	}
 }
