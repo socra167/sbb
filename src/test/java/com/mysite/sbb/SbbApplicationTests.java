@@ -24,10 +24,11 @@ class SbbApplicationTests {
 	private QuestionRepository questionRepository;
 
 	@Autowired
+	private AnswerRepository answerRepository;
+
+	@Autowired
 	@PersistenceContext
 	private EntityManager entityManager;
-	@Autowired
-	private AnswerRepository answerRepository;
 
 	@Test
 	void contextLoads() {
@@ -43,6 +44,7 @@ class SbbApplicationTests {
 			entityManager.createNativeQuery("""
 				SET REFERENTIAL_INTEGRITY FALSE;
 				TRUNCATE TABLE question RESTART IDENTITY;
+				TRUNCATE TABLE answer RESTART IDENTITY;
 				SET REFERENTIAL_INTEGRITY TRUE;
 				"""
 			).executeUpdate();
@@ -72,6 +74,7 @@ class SbbApplicationTests {
 			answer.setCreateDate(LocalDateTime.now());
 			answer.setQuestion(question);
 			answerRepository.save(answer);
+			question.addAnswer(answer);
 		}
 
 		@Nested
@@ -144,6 +147,19 @@ class SbbApplicationTests {
 				assertThat(questionRepository.count()).isEqualTo(1);
 			}
 
+			@Test
+			@DisplayName("질문으로 답변을 찾을 수 있다")
+			void findAnswerByQuestion() {
+				setUpExampleQuestions();
+				setUpExampleAnswers();
+				var foundQuestion = questionRepository.findById(2);
+				assertThat(foundQuestion).isPresent();
+				var question = foundQuestion.get();
+				var answers = question.getAnswers();
+
+				assertThat(answers).hasSize(1);
+				assertThat(answers.getFirst().getContent()).isEqualTo("네 자동으로 생성됩니다.");
+			}
 		}
 
 		@Nested
