@@ -34,7 +34,7 @@ class SbbApplicationTests {
 	}
 
 	@Nested
-	@DisplayName("질문을")
+	@DisplayName("데이터베이스 테스트")
 	@Transactional
 	class databaseTest {
 
@@ -46,13 +46,6 @@ class SbbApplicationTests {
 				SET REFERENTIAL_INTEGRITY TRUE;
 				"""
 			).executeUpdate();
-		}
-
-		@Test
-		@DisplayName("저장할 수 있다")
-		void saveQuestion() {
-			questionRepository.deleteAll();
-			setUpExampleQuestions();
 		}
 
 		private void setUpExampleQuestions() {
@@ -69,78 +62,96 @@ class SbbApplicationTests {
 			questionRepository.save(q2);
 		}
 
-		@Test
-		@DisplayName("모두 조회할 수 있다")
-		void findAllQuesitons() {
-			setUpExampleQuestions();
-			var allQuestions = questionRepository.findAll();
-			assertThat(allQuestions).hasSize(2);
-			var q = allQuestions.getFirst();
-			assertThat(q.getSubject()).isEqualTo("sbb가 무엇인가요?");
+		@Nested
+		@DisplayName("질문을")
+		class questionTests {
+
+			@Test
+			@DisplayName("저장할 수 있다")
+			void saveQuestion() {
+				questionRepository.deleteAll();
+				setUpExampleQuestions();
+			}
+
+			@Test
+			@DisplayName("모두 조회할 수 있다")
+			void findAllQuesitons() {
+				setUpExampleQuestions();
+				var allQuestions = questionRepository.findAll();
+				assertThat(allQuestions).hasSize(2);
+				var q = allQuestions.getFirst();
+				assertThat(q.getSubject()).isEqualTo("sbb가 무엇인가요?");
+			}
+
+			@Test
+			@DisplayName("subject로 조회할 수 있다")
+			void findBySubject() {
+				setUpExampleQuestions();
+				var question = questionRepository.findBySubject("sbb가 무엇인가요?");
+				assertThat(question).isPresent();
+			}
+
+			@Test
+			@DisplayName("subject와 content로 조회할 수 있다")
+			void findBySubjectAndContent() {
+				setUpExampleQuestions();
+				var question = questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
+				assertThat(question).isPresent();
+			}
+
+			@Test
+			@DisplayName("subject의 특정 문자열로 검색할 수 있다")
+			void findBySubjectLike() {
+				setUpExampleQuestions();
+				var questions = questionRepository.findBySubjectLike("sbb%");
+				var question = questions.getFirst();
+				assertThat(question.getSubject()).isEqualTo("sbb가 무엇인가요?");
+			}
+
+			@Test
+			@DisplayName("수정할 수 있다")
+			void updateQuestion() {
+				setUpExampleQuestions();
+				var foundQuestion = questionRepository.findById(1);
+				assertThat(foundQuestion).isPresent();
+
+				var question = foundQuestion.get();
+				question.setSubject("수정된 제목");
+				questionRepository.save(question);
+			}
+
+			@Test
+			@DisplayName("삭제할 수 있다")
+			void deleteQuestion() {
+				setUpExampleQuestions();
+				var foundQuestion = questionRepository.findById(1);
+				assertThat(foundQuestion).isPresent();
+
+				var question = foundQuestion.get();
+				questionRepository.delete(question);
+				assertThat(questionRepository.count()).isEqualTo(1);
+			}
+
 		}
 
-		@Test
-		@DisplayName("subject로 조회할 수 있다")
-		void findBySubject() {
-			setUpExampleQuestions();
-			var question = questionRepository.findBySubject("sbb가 무엇인가요?");
-			assertThat(question).isPresent();
-		}
+		@Nested
+		@DisplayName("답변을")
+		class answerTests {
 
-		@Test
-		@DisplayName("subject와 content로 조회할 수 있다")
-		void findBySubjectAndContent() {
-			setUpExampleQuestions();
-			var question = questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
-			assertThat(question).isPresent();
-		}
+			@Test
+			@DisplayName("저장할 수 있다")
+			void saveAnswer() {
+				setUpExampleQuestions();
+				var foundQuestion = questionRepository.findById(2);
+				assertThat(foundQuestion).isPresent();
+				var question = foundQuestion.get();
 
-		@Test
-		@DisplayName("subject의 특정 문자열로 검색할 수 있다")
-		void findBySubjectLike() {
-			setUpExampleQuestions();
-			var questions = questionRepository.findBySubjectLike("sbb%");
-			var question = questions.getFirst();
-			assertThat(question.getSubject()).isEqualTo("sbb가 무엇인가요?");
-		}
-
-		@Test
-		@DisplayName("수정할 수 있다")
-		void updateQuestion() {
-			setUpExampleQuestions();
-			var foundQuestion = questionRepository.findById(1);
-			assertThat(foundQuestion).isPresent();
-
-			var question = foundQuestion.get();
-			question.setSubject("수정된 제목");
-			questionRepository.save(question);
-		}
-
-		@Test
-		@DisplayName("삭제할 수 있다")
-		void deleteQuestion() {
-			setUpExampleQuestions();
-			var foundQuestion = questionRepository.findById(1);
-			assertThat(foundQuestion).isPresent();
-
-			var question = foundQuestion.get();
-			questionRepository.delete(question);
-			assertThat(questionRepository.count()).isEqualTo(1);
-		}
-
-		@Test
-		@DisplayName("답변에 저장할 수 있다")
-		void saveAnswer() {
-			setUpExampleQuestions();
-			var foundQuestion = questionRepository.findById(2);
-			assertThat(foundQuestion).isPresent();
-			var question = foundQuestion.get();
-
-			var answer = new Answer();
-			answer.setContent("네 자동으로 생성됩니다.");
-			answer.setQuestion(question);
-			answer.setCreateDate(LocalDateTime.now());
-			answerRepository.save(answer);
+				var answer = new Answer();
+				answer.setContent("네 자동으로 생성됩니다.");
+				answer.setQuestion(question);
+				answer.setCreateDate(LocalDateTime.now());
+				answerRepository.save(answer);
+			}
 		}
 	}
 }
