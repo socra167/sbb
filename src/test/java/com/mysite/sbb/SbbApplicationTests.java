@@ -99,5 +99,17 @@ class SbbApplicationTests {
 			question.setSubject("수정된 제목");
 			questionRepository.save(question);
 		}
+
+		@Test
+		@DisplayName("질문을 삭제할 수 있다")
+		void deleteQuestion() {
+			setUpQuestions();
+			var foundQuestion = questionRepository.findById(1);
+			assertThat(foundQuestion).isPresent();
+
+			var question = foundQuestion.get();
+			questionRepository.delete(question);
+			assertThat(questionRepository.count()).isEqualTo(1);
+		}
 	}
 }
