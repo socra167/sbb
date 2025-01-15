@@ -62,6 +62,15 @@ class SbbApplicationTests {
 			questionRepository.save(q2);
 		}
 
+		private void setUpExampleAnswers() {
+			var q1 = questionRepository.findById(2).get();
+			var a1 = new Answer();
+			a1.setContent("네 자동으로 생성됩니다.");
+			a1.setCreateDate(LocalDateTime.now());
+			a1.setQuestion(q1);
+			answerRepository.save(a1);
+		}
+
 		@Nested
 		@DisplayName("질문을")
 		class questionTests {
@@ -142,15 +151,19 @@ class SbbApplicationTests {
 			@DisplayName("저장할 수 있다")
 			void saveAnswer() {
 				setUpExampleQuestions();
-				var foundQuestion = questionRepository.findById(2);
-				assertThat(foundQuestion).isPresent();
-				var question = foundQuestion.get();
+				setUpExampleAnswers();
+			}
 
-				var answer = new Answer();
-				answer.setContent("네 자동으로 생성됩니다.");
-				answer.setQuestion(question);
-				answer.setCreateDate(LocalDateTime.now());
-				answerRepository.save(answer);
+			@Test
+			@DisplayName("조회할 수 있다")
+			void findAnswer() {
+				setUpExampleQuestions();
+				setUpExampleAnswers();
+				var foundAnswer = answerRepository.findById(1);
+				assertThat(foundAnswer).isPresent();
+
+				var answer = foundAnswer.get();
+				assertThat(answer.getQuestion().getId()).isEqualTo(2);
 			}
 		}
 	}
