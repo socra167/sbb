@@ -87,5 +87,17 @@ class SbbApplicationTests {
 			var question = questions.getFirst();
 			assertThat(question.getSubject()).isEqualTo("sbb가 무엇인가요?");
 		}
+
+		@Test
+		@DisplayName("질문을 수정할 수 있다")
+		void updateQuestion() {
+			setUpQuestions();
+			var foundQuestion = questionRepository.findById(1);
+			assertThat(foundQuestion).isPresent();
+
+			var question = foundQuestion.get();
+			question.setSubject("수정된 제목");
+			questionRepository.save(question);
+		}
 	}
 }
