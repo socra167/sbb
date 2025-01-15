@@ -23,6 +23,12 @@ class SbbApplicationTests {
 	@Autowired
 	private QuestionRepository questionRepository;
 
+	@Autowired
+	@PersistenceContext
+	private EntityManager entityManager;
+	@Autowired
+	private AnswerRepository answerRepository;
+
 	@Test
 	void contextLoads() {
 	}
@@ -31,9 +37,6 @@ class SbbApplicationTests {
 	@DisplayName("질문을")
 	@Transactional
 	class databaseTest {
-		@Autowired
-		@PersistenceContext
-		private EntityManager entityManager;
 
 		@BeforeEach
 		void setUp() {
@@ -123,6 +126,21 @@ class SbbApplicationTests {
 			var question = foundQuestion.get();
 			questionRepository.delete(question);
 			assertThat(questionRepository.count()).isEqualTo(1);
+		}
+
+		@Test
+		@DisplayName("답변에 저장할 수 있다")
+		void saveAnswer() {
+			setUpExampleQuestions();
+			var foundQuestion = questionRepository.findById(2);
+			assertThat(foundQuestion).isPresent();
+			var question = foundQuestion.get();
+
+			var answer = new Answer();
+			answer.setContent("네 자동으로 생성됩니다.");
+			answer.setQuestion(question);
+			answer.setCreateDate(LocalDateTime.now());
+			answerRepository.save(answer);
 		}
 	}
 }
