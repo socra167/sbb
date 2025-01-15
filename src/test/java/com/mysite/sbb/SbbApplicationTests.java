@@ -12,6 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @TestPropertySource("classpath:application-test.properties")
 @SpringBootTest
@@ -24,22 +28,31 @@ class SbbApplicationTests {
 	}
 
 	@Nested
-	@DisplayName("데이터베이스 테스트")
+	@DisplayName("질문을")
+	@Transactional
 	class databaseTest {
+		@Autowired
+		@PersistenceContext
+		private EntityManager entityManager;
 
 		@BeforeEach
 		void setUp() {
-			questionRepository.deleteAll();
+			entityManager.createNativeQuery("""
+				SET REFERENTIAL_INTEGRITY FALSE;
+				TRUNCATE TABLE question RESTART IDENTITY;
+				SET REFERENTIAL_INTEGRITY TRUE;
+				"""
+			).executeUpdate();
 		}
 
 		@Test
-		@DisplayName("질문을 저장할 수 있다")
+		@DisplayName("저장할 수 있다")
 		void saveQuestion() {
 			questionRepository.deleteAll();
-			setUpQuestions();
+			setUpExampleQuestions();
 		}
 
-		private void setUpQuestions() {
+		private void setUpExampleQuestions() {
 			var q1 = new Question();
 			q1.setSubject("sbb가 무엇인가요?");
 			q1.setContent("sbb에 대해서 알고 싶습니다.");
@@ -54,9 +67,9 @@ class SbbApplicationTests {
 		}
 
 		@Test
-		@DisplayName("저장된 질문을 모두 조회할 수 있다")
+		@DisplayName("모두 조회할 수 있다")
 		void findAllQuesitons() {
-			setUpQuestions();
+			setUpExampleQuestions();
 			var allQuestions = questionRepository.findAll();
 			assertThat(allQuestions).hasSize(2);
 			var q = allQuestions.getFirst();
@@ -64,34 +77,34 @@ class SbbApplicationTests {
 		}
 
 		@Test
-		@DisplayName("subject로 질문을 조회할 수 있다")
+		@DisplayName("subject로 조회할 수 있다")
 		void findBySubject() {
-			setUpQuestions();
+			setUpExampleQuestions();
 			var question = questionRepository.findBySubject("sbb가 무엇인가요?");
 			assertThat(question).isPresent();
 		}
 
 		@Test
-		@DisplayName("subject와 content로 질문을 조회할 수 있다")
+		@DisplayName("subject와 content로 조회할 수 있다")
 		void findBySubjectAndContent() {
-			setUpQuestions();
+			setUpExampleQuestions();
 			var question = questionRepository.findBySubjectAndContent("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
 			assertThat(question).isPresent();
 		}
 
 		@Test
-		@DisplayName("subject의 특정 문자열로 질문을 검색할 수 있다")
+		@DisplayName("subject의 특정 문자열로 검색할 수 있다")
 		void findBySubjectLike() {
-			setUpQuestions();
+			setUpExampleQuestions();
 			var questions = questionRepository.findBySubjectLike("sbb%");
 			var question = questions.getFirst();
 			assertThat(question.getSubject()).isEqualTo("sbb가 무엇인가요?");
 		}
 
 		@Test
-		@DisplayName("질문을 수정할 수 있다")
+		@DisplayName("수정할 수 있다")
 		void updateQuestion() {
-			setUpQuestions();
+			setUpExampleQuestions();
 			var foundQuestion = questionRepository.findById(1);
 			assertThat(foundQuestion).isPresent();
 
@@ -101,9 +114,9 @@ class SbbApplicationTests {
 		}
 
 		@Test
-		@DisplayName("질문을 삭제할 수 있다")
+		@DisplayName("삭제할 수 있다")
 		void deleteQuestion() {
-			setUpQuestions();
+			setUpExampleQuestions();
 			var foundQuestion = questionRepository.findById(1);
 			assertThat(foundQuestion).isPresent();
 
