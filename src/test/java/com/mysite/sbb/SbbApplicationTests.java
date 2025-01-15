@@ -63,12 +63,15 @@ class SbbApplicationTests {
 		}
 
 		private void setUpExampleAnswers() {
-			var q1 = questionRepository.findById(2).get();
-			var a1 = new Answer();
-			a1.setContent("네 자동으로 생성됩니다.");
-			a1.setCreateDate(LocalDateTime.now());
-			a1.setQuestion(q1);
-			answerRepository.save(a1);
+			var foundQuestion = questionRepository.findById(2);
+			assertThat(foundQuestion).isPresent();
+
+			var question = foundQuestion.get();
+			var answer = new Answer();
+			answer.setContent("네 자동으로 생성됩니다.");
+			answer.setCreateDate(LocalDateTime.now());
+			answer.setQuestion(question);
+			answerRepository.save(answer);
 		}
 
 		@Nested
