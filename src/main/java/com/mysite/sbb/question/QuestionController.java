@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.mysite.sbb.answer.AnswerForm;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +30,7 @@ public class QuestionController {
 	}
 
 	@GetMapping(value = "/detail/{id}")
-	public String detail(Model model, @PathVariable("id") Integer id) {
+	public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm) {
 		model.addAttribute("question", questionService.getQuestion(id));
 		return "question_detail";
 	}
