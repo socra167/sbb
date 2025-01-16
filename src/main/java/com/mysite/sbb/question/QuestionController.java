@@ -29,4 +29,9 @@ public class QuestionController {
 		model.addAttribute("question", questionService.getQuestion(id));
 		return "question_detail";
 	}
+
+	@GetMapping("/create")
+	public String questionCreate() {
+		return "question_form";
+	}
 }
