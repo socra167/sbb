@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import com.mysite.sbb.question.Question;
-
 import lombok.RequiredArgsConstructor;
+
+import com.mysite.sbb.question.Question;
 
 @RequiredArgsConstructor
 @Service
