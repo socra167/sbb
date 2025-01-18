@@ -16,9 +16,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		// 인증되지 않은 모든 페이지의 요청을 허락한다
-		return http.authorizeHttpRequests(
-			(authorizeHttpRequests) -> authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**"))
-				.permitAll()).build();
+		// "/**" 인증되지 않은 모든 페이지의 요청을 허락한다, csrf 처리 시 "/h2-console/**"는 예외로 처리한다
+		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
+			.requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
+				.csrf((csrf) -> csrf
+					.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")));
+		return http.build();
 	}
 }
