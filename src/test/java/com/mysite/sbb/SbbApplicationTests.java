@@ -4,17 +4,13 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mysite.sbb.answer.Answer;
@@ -22,8 +18,12 @@ import com.mysite.sbb.answer.AnswerRepository;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionRepository;
 
-@TestPropertySource("classpath:application-test.properties")
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+@Transactional
 @SpringBootTest
+@ActiveProfiles("test")
 class SbbApplicationTests {
 	@Autowired
 	private QuestionRepository questionRepository;
@@ -35,13 +35,8 @@ class SbbApplicationTests {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@Test
-	void contextLoads() {
-	}
-
 	@Nested
 	@DisplayName("데이터베이스 테스트")
-	@Transactional
 	class databaseTest {
 
 		@BeforeEach
