@@ -27,6 +27,8 @@ public class UserController {
 		}
 
 		if (!userCreateForm.getPassword1().equals(userCreateForm.getPassword2())) {
+			// password1과 password2가 일치하지 않을 경우 오류를 발생시킨다
+			// bindingResult.rejectValue(필드명, 오류 코드, 오류 메시지)
 			bindingResult.rejectValue("password2", "passwordInCorrect",
 				"2개의 패스워드가 일치하지 않습니다.");
 			return "signup_form";
