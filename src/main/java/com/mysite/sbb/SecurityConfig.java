@@ -27,7 +27,10 @@ public class SecurityConfig {
 				.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
 			.headers((headers) -> headers
 				.addHeaderWriter(new XFrameOptionsHeaderWriter(
-					XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)));
+					XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
+			.formLogin(formLogin -> formLogin // 스프링 시큐리티의 로그인 설정
+				.loginPage("/user/login") // 로그인 페이지 URL
+			.defaultSuccessUrl("/")); // 성공 시 이동할 페이지
 		return http.build();
 	}
 
