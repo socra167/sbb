@@ -13,10 +13,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * com.mysite.sbb 패키지에 스프링 시큐리티의 설정을 담당
  * 내부적으로 SecurityFilterChain 클래스가 동작해 모든 요청 URL에 이 클래스가 필터로 적용되어 URL 별로 특별한 설정을 할 수 있게 된다.
  */
+@Slf4j
 @Configuration // 스프링의 환경 설정 파일
 @EnableWebSecurity // 모든 요청 URL이 스프링 시큐리티의 제어를 받게 함 (스프링 시큐리티 활성화)
 public class SecurityConfig {
@@ -33,7 +36,11 @@ public class SecurityConfig {
 					XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
 			.formLogin(formLogin -> formLogin // 스프링 시큐리티의 로그인 설정
 				.loginPage("/user/login") // 로그인 페이지 URL
-			.defaultSuccessUrl("/")); // 성공 시 이동할 페이지
+			.defaultSuccessUrl("/")) // 성공 시 이동할 페이지
+			.logout(logout -> logout
+				.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
+				.logoutSuccessUrl("/")
+				.invalidateHttpSession(true));
 		return http.build();
 	}
 
