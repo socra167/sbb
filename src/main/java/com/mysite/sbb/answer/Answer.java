@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import com.mysite.sbb.question.Question;
+import com.mysite.sbb.user.SiteUser;
 
 @Getter
 @Setter
@@ -29,4 +30,7 @@ public class Answer {
 
 	@ManyToOne
 	private Question question;
+
+	@ManyToOne
+	private SiteUser author;
 }
