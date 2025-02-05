@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import jakarta.validation.Valid;
 
+import org.aspectj.weaver.tools.cache.AbstractIndexedFileCacheBacking;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionService;
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserService;
 
 @RequestMapping("/answer")
 @RequiredArgsConstructor
@@ -23,16 +26,18 @@ public class AnswerController {
 
 	private final QuestionService questionService;
 	private final AnswerService answerService;
+	private final UserService userService;
 
 	@PostMapping("/create/{id}")
 	public String createAnswer(Model model, @PathVariable Integer id, @Valid AnswerForm answerForm,
 		BindingResult bindingResult, Principal principal) {
 		Question question = questionService.getQuestion(id);
+		SiteUser siteUser = userService.getUser(principal.getName());
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("question", question);
 			return "question_detail";
 		}
-		answerService.create(question, answerForm.getContent());
+		answerService.create(question, answerForm.getContent(), siteUser);
 		return String.format("redirect:/question/detail/%s", id);
 	}
 }
