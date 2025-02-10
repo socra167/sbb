@@ -5,6 +5,7 @@ import java.security.Principal;
 import jakarta.validation.Valid;
 
 import org.aspectj.weaver.tools.cache.AbstractIndexedFileCacheBacking;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +29,7 @@ public class AnswerController {
 	private final AnswerService answerService;
 	private final UserService userService;
 
+	@PreAuthorize("isAuthenticated()") // 로그인한 경우에만 메서드 실행, 로그아웃 상태면 로그인 페이지로 이동
 	@PostMapping("/create/{id}")
 	public String createAnswer(Model model, @PathVariable Integer id, @Valid AnswerForm answerForm,
 		BindingResult bindingResult, Principal principal) {

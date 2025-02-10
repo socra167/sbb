@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.auditing.config.AuditingConfiguration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration // 스프링의 환경 설정 파일
 @EnableWebSecurity // 모든 요청 URL이 스프링 시큐리티의 제어를 받게 함 (스프링 시큐리티 활성화)
+@EnableMethodSecurity(prePostEnabled = true) // @PreAuthorize 애너테이션을 사용하기 위해 필요한 설정
 public class SecurityConfig {
 
 	@Bean
